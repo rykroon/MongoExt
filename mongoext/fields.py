@@ -1,16 +1,19 @@
 from mongoext import expressions
         
 
-
 class Field:
     def __init__(self, name=None):
+        self.owner = None
         self.name = name
 
     def __set_name__(self, owner, name):
+        self.owner = owner
         if self.name is None:
             self.name = name
 
     def __hash__(self):
+        if self.owner:
+            return hash((self.owner, self.name))
         return hash(self.name)
 
     def __repr__(self):
