@@ -26,28 +26,22 @@ class ComparisonExpression(Expression):
     def __and__(self , other):
         if not isinstance(other, Expression):
             raise TypeError
-        
-        if isinstance(other, ComparisonExpression):
-            return and_(self, other)
 
         if isinstance(other, LogicalExpression):
             if other.op == Operator.AND:
                 return and_(self, *other.exprs)
 
-            return and_(self, other)
+        return and_(self, other)
         
     def __or__(self, other):
         if not isinstance(other, Expression):
             raise TypeError
-        
-        if isinstance(other, ComparisonExpression):
-            return or_(self, other)
 
         if isinstance(other, LogicalExpression):
             if other.op == Operator.OR:
                 return or_(self, *other.exprs)
 
-            return or_(self, other)
+        return or_(self, other)
 
     def __neg__(self):
         return ComparisonExpression(self.field, self.op, self.value, not self.negate)
@@ -64,35 +58,23 @@ class LogicalExpression(Expression):
         if not isinstance(other, Expression):
             raise TypeError
 
-        exprs = []
-        if self.op == Operator.AND:
-            exprs.extend(self.exprs)
-        else:
-            exprs.append(self)
+        self_exprs = self.exprs if self.op == Operator.AND else [self]
 
         if isinstance(other, LogicalExpression) and other.op == Operator.AND:
-            exprs.extend(other.exprs)
-        else:
-            exprs.append(other)
+            return and_(*self_exprs, *other.exprs)
 
-        return and_(*exprs)
+        return and_(*self_exprs, other)
 
     def __or__(self, other):
         if not isinstance(other, Expression):
             raise TypeError
         
-        exprs = []
-        if self.op == Operator.OR:
-            exprs.extend(self.exprs)
-        else:
-            exprs.append(self)
+        self_exprs = self.exprs if self.op == Operator.OR else [self]
 
         if isinstance(other, LogicalExpression) and other.op == Operator.OR:
-            exprs.extend(other.exprs)
-        else:
-            exprs.append(other)
+            return or_(*self_exprs, *other.exprs)
 
-        return or_(*exprs)
+        return or_(*self_exprs, other)
 
     def __neg__(self):
         if self.op == Operator.AND:
