@@ -94,6 +94,15 @@ class LogicalExpression(Expression):
 
         return or_(*exprs)
 
+    def __neg__(self):
+        if self.op == Operator.AND:
+            op = Operator.OR
+        elif self.op == Operator.OR:
+            op = Operator.AND
+
+        exprs = [-expr for expr in self.exprs]
+        return LogicalExpression(op, *exprs)
+
 
 class ElementExpression(ComparisonExpression):
     pass
