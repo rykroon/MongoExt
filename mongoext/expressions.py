@@ -11,11 +11,17 @@ class Expression(dict):
 
 class ComparisonExpression(Expression):
 
-    def __init__(self, field, op, value):
+    def __init__(self, field, op, value, negate=False):
         self.field = field
         self.op = op
         self.value = value
-        super().__init__(self.field, {self.op: self.value})
+        self.negate = negate
+
+        rhs = {self.op: self.value}
+        if self.negate:
+            rhs = {Operator.NOT: rhs}
+        
+        super().__init__(self.field, rhs)
 
     def __and__(self , other):
         if not isinstance(other, Expression):
@@ -44,7 +50,7 @@ class ComparisonExpression(Expression):
             return or_(self, other)
 
     def __neg__(self):
-        return not_(self.lhs, self.rhs)
+        return ComparisonExpression(self.field, self.op, self.value, not self.negate)
 
 
 class LogicalExpression(Expression):
@@ -58,39 +64,35 @@ class LogicalExpression(Expression):
         if not isinstance(other, Expression):
             raise TypeError
 
-        if isinstance(other, ComparisonExpression):
-            return and_(*self.exprs, other)
+        exprs = []
+        if self.op == Operator.AND:
+            exprs.extend(self.exprs)
+        else:
+            exprs.append(self)
 
-        if isinstance(other, LogicalExpression):
-            if self.op == Operator.AND and other.op == Operator.AND:
-                return and_(*self.exprs, *other.exprs)
+        if isinstance(other, LogicalExpression) and other.op == Operator.AND:
+            exprs.extend(other.exprs)
+        else:
+            exprs.append(other)
 
-            if self.op == Operator.AND:
-                return and_(*self.exprs, other)
-
-            if other.op == Operator.AND:
-                return and_(self, *other.exprs)
-
-            return and_(self, other)
+        return and_(*exprs)
 
     def __or__(self, other):
         if not isinstance(other, Expression):
             raise TypeError
+        
+        exprs = []
+        if self.op == Operator.OR:
+            exprs.extend(self.exprs)
+        else:
+            exprs.append(self)
 
-        if isinstance(other, ComparisonExpression):
-            return or_(*self.exprs, other)
+        if isinstance(other, LogicalExpression) and other.op == Operator.OR:
+            exprs.extend(other.exprs)
+        else:
+            exprs.append(other)
 
-        if isinstance(other, LogicalExpression):
-            if self.op == Operator.OR and other.op == Operator.OR:
-                return or_(*self.exprs, *other.exprs)
-
-            if self.op == Operator.OR:
-                return or_(*self.exprs, other)
-
-            if other.op == Operator.OR:
-                return or_(self, *other.exprs)
-
-            return or_(self, other)
+        return or_(*exprs)
 
 
 class ElementExpression(ComparisonExpression):
@@ -130,6 +132,7 @@ def and_(*exprs):
     return LogicalExpression(Operator.AND, *exprs)
 
 def not_(field, expr):
+    # Maybe deprecate this or simply return the negation of an expression.
     return ComparisonExpression(field, Operator.NOT, expr)
 
 def nor(*exprs):
