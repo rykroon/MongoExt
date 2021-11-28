@@ -1,4 +1,4 @@
-from mongo_ext import operators
+from mongoext import expressions
         
 
 
@@ -20,20 +20,20 @@ class Field:
         return self.name
 
     def __eq__(self, value):
-        return operators.eq(self, value)
+        return expressions.eq(self, value)
 
     def __ne__(self, value):
-        return operators.ne(self, value)
+        return expressions.ne(self, value)
 
     def __lt__(self, value):
-        return operators.lt(self, value)
+        return expressions.lt(self, value)
 
     def __le__(self, value):
-        return operators.lte(self, value)
+        return expressions.lte(self, value)
 
     def __gt__(self, value):
-        return operators.gt(self, value)
+        return expressions.gt(self, value)
 
     def __ge__(self, value):
-        return operators.gte(self, value)
+        return expressions.gte(self, value)
     
