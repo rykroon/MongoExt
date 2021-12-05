@@ -16,9 +16,6 @@ class Field:
             return hash((self.owner, self.name))
         return hash(self.name)
 
-    def __repr__(self):
-        return self.name
-
     def __str__(self):
         return self.name
 
@@ -40,32 +37,32 @@ class Field:
     def __ge__(self, value):
         return self.gte(value)
 
-    def eq(self, value):
+    def eq(self, value, /):
         return expressions.eq(self, value)
 
-    def ne(self, value):
+    def ne(self, value, /):
         return expressions.ne(self, value)
 
-    def le(self, value):
+    def le(self, value, /):
         return expressions.lt(self, value)
 
-    def lte(self, value):
+    def lte(self, value, /):
         return expressions.lte(self, value)
 
-    def gt(self, value):
+    def gt(self, value, /):
         return expressions.gt(self, value)
 
-    def gte(self, value):
+    def gte(self, value, /):
         return expressions.gte(self, value)
 
-    def in_(self, value):
+    def in_(self, value, /):
         return expressions.in_(self, value)
 
-    def nin(self, value):
+    def nin(self, value, /):
         return expressions.nin(self, value)
     
-    def exists(self, value=True):
+    def exists(self, value=True, /):
         return expressions.exists(self, value)
 
-    def type(self, value):
-        return expressions.type(self, value)
+    def type(self, value, /):
+        return expressions.type_(self, value)
