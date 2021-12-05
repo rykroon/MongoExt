@@ -1,4 +1,8 @@
+from datetime import datetime
+from decimal import Decimal
 from enum import Enum
+
+from bson import ObjectId, Decimal128, Int64, SON
 
 
 class Operator(str, Enum):
@@ -13,7 +17,6 @@ class Operator(str, Enum):
     AND = '$and'
     OR = '$or'
     NOT = '$not'
-    #NOR = '$nor'
     EXISTS = '$exists'
     TYPE = '$type'
 
@@ -24,8 +27,7 @@ class Operator(str, Enum):
         return self.value
 
 
-
-class BsonType(Enum):
+class BsonType(int, Enum):
     DOUBLE = 1
     STRING = 2
     OBJECT = 3
@@ -47,3 +49,28 @@ class BsonType(Enum):
     DECIMAL = 19
     MIN_KEY = -1
     MAX_KEY = 127
+
+    def __repr__(self):
+        return str(self.value)
+
+    def __str__(self):
+        return self.value
+
+
+PYTHON_BSON_MAPPING = {
+    float: BsonType.DOUBLE,
+    str: BsonType.STRING,
+    dict: BsonType.OBJECT,
+    SON: BsonType.OBJECT,
+    list: BsonType.ARRAY, 
+    bytes: BsonType.BIN_DATA,
+    ObjectId: BsonType.OBJECT_ID,
+    bool: BsonType.BOOL,
+    datetime: BsonType.DATE,
+    None: BsonType.NULL,
+    type(None): BsonType.NULL,
+    int: BsonType.INT,
+    Int64: BsonType.INT,
+    Decimal: BsonType.DECIMAL,
+    Decimal128: BsonType.DECIMAL
+}
