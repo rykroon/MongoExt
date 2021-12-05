@@ -2,71 +2,71 @@ from mongoext.fields import Field
 
 
 if __name__ == '__main__':
-    name = Field('name')
-    a = name == 'A'
-    b = name == 'B'
-    c = name == 'C'
-    d = name == 'D'
+    foo = Field('foo')
+    a = foo == 'A'
+    b = foo == 'B'
+    c = foo == 'C'
+    d = foo == 'D'
 
-    a_and_b = a & b
-    assert a_and_b == --a_and_b == {
+    anb = a & b
+    assert anb == --anb == {
         '$and': [
-            {'name': {'$eq': 'A'}}, 
-            {'name': {'$eq': 'B'}}
+            {'foo': {'$eq': 'A'}}, 
+            {'foo': {'$eq': 'B'}}
         ]
     }
 
-    a_or_b = a | b
-    assert a_or_b == --a_or_b == {
+    aob = a | b
+    assert aob == --aob == {
         '$or': [
-            {'name': {'$eq': 'A'}}, 
-            {'name': {'$eq': 'B'}}
+            {'foo': {'$eq': 'A'}}, 
+            {'foo': {'$eq': 'B'}}
         ]
     }
 
-    c_and_d = c & d
-    c_or_d = c | d
+    cnd = c & d
+    cod = c | d
 
-    assert a_and_b & c_and_d == --(a_and_b & c_and_d) == {
+    assert anb & cnd == --(anb & cnd) == {
         '$and': [
-            {'name': {'$eq': 'A'}}, 
-            {'name': {'$eq': 'B'}},
-            {'name': {'$eq': 'C'}}, 
-            {'name': {'$eq': 'D'}}
+            {'foo': {'$eq': 'A'}}, 
+            {'foo': {'$eq': 'B'}},
+            {'foo': {'$eq': 'C'}}, 
+            {'foo': {'$eq': 'D'}}
         ]
     }
 
-    assert a_and_b | c_and_d == --(a_and_b | c_and_d) =={
+    assert anb | cnd == --(anb | cnd) =={
         '$or': [
             {'$and': [
-                {'name': {'$eq': 'A'}}, 
-                {'name': {'$eq': 'B'}}
+                {'foo': {'$eq': 'A'}}, 
+                {'foo': {'$eq': 'B'}}
         ]}, 
             {'$and': [
-                {'name': {'$eq': 'C'}}, 
-                {'name': {'$eq': 'D'}}
+                {'foo': {'$eq': 'C'}}, 
+                {'foo': {'$eq': 'D'}}
             ]}
         ]
     }
 
-    assert a_or_b | c_or_d == --(a_or_b | c_or_d ) == {
+    assert aob | cod == --(aob | cod ) == {
         '$or': [
-            {'name': {'$eq': 'A'}}, 
-            {'name': {'$eq': 'B'}},
-            {'name': {'$eq': 'C'}}, 
-            {'name': {'$eq': 'D'}}
+            {'foo': {'$eq': 'A'}}, 
+            {'foo': {'$eq': 'B'}},
+            {'foo': {'$eq': 'C'}}, 
+            {'foo': {'$eq': 'D'}}
         ]
     }
 
-    assert a_or_b & c_or_d == --(a_or_b & c_or_d ) == {
+    assert aob & cod == --(aob & cod ) == {
         '$and': [
             {'$or': [
-                {'name': {'$eq': 'A'}}, 
-                {'name': {'$eq': 'B'}}
+                {'foo': {'$eq': 'A'}}, 
+                {'foo': {'$eq': 'B'}}
         ]}, 
             {'$or': [
-                {'name': {'$eq': 'C'}}, 
-                {'name': {'$eq': 'D'}}
+                {'foo': {'$eq': 'C'}}, 
+                {'foo': {'$eq': 'D'}}
             ]}
         ]
     }
