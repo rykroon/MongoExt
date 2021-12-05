@@ -122,12 +122,12 @@ def nin(field, value):
 def and_(*exprs):
     return LogicalExpression(Operator.AND, *exprs)
 
-def not_(field, expr):
-    # Maybe deprecate this or simply return the negation of an expression.
-    return ComparisonExpression(field, Operator.NOT, expr)
+# def not_(field, expr):
+#     # Maybe deprecate this or simply return the negation of an expression.
+#     return ComparisonExpression(field, Operator.NOT, expr)
 
-def nor(*exprs):
-    return LogicalExpression(Operator.NOR, *exprs)
+# def nor(*exprs):
+#     return LogicalExpression(Operator.NOR, *exprs)
 
 def or_(*exprs):
     return LogicalExpression(Operator.OR, *exprs)

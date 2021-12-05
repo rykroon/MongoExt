@@ -13,7 +13,7 @@ class Operator(str, Enum):
     AND = '$and'
     OR = '$or'
     NOT = '$not'
-    NOR = '$nor'
+    #NOR = '$nor'
     EXISTS = '$exists'
     TYPE = '$type'
 
