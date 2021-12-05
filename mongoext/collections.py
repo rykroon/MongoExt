@@ -1,20 +1,26 @@
 from bson import ObjectId
+from pymongo.collection import Collection
+from motor.motor_asyncio import AsyncIOMotorCollection
+
+from mongoext.fields import Field
 
 
-class CollectionManager:
+id_field = Field('_id')
 
-    def __init__(self, collection):
-        self.collection = collection
+
+class CollectionExt(Collection):
 
     def get(self, id):
-        return self.collection.find_one({'_id': ObjectId(id)})
+        query = id_field == ObjectId(id)
+        return self.find_one(query)
 
     def insert(self, document):
-        return self.collection.insert_one(document)
+        return self.insert_one(document)
 
     def update(self, document):
-        return self.collection.update_one(
-            filter={'_id': document['_id']},
+        query = id_field == document['_id']
+        return self.update_one(
+            filter=query,
             update={'$set': document}
         )
 
@@ -25,25 +31,23 @@ class CollectionManager:
         return self.update(document)
 
     def delete(self, document):
-        return self.collection.delete_one(
-            filter={'_id': document['_id']}
-        )
+        query = id_field == document['_id']
+        return self.delete_one(filter=query)
 
 
-class AsyncCollectionManager:
-
-    def __init__(self, collection):
-        self.collection = collection
+class AsyncCollectionExt(AsyncIOMotorCollection):
 
     async def get(self, id):
-        return await self.collection.find_one({'_id': ObjectId(id)})
+        query = id_field == ObjectId(id)
+        return await self.find_one(query)
 
     async def insert(self, document):
-        return await self.collection.insert_one(document)
+        return await self.insert_one(document)
 
     async def update(self, document):
-        return await self.collection.update_one(
-            filter={'_id': document['_id']},
+        query = id_field == document['_id']
+        return await self.update_one(
+            filter=query,
             update={'$set': document}
         )
 
@@ -54,6 +58,5 @@ class AsyncCollectionManager:
         return await self.update(document)
 
     async def delete(self, document):
-        return await self.collection.delete_one(
-            filter={'_id': document['_id']}
-        )
+        query = id_field == document['_id']
+        return await self.delete_one(filter=query)
