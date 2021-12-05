@@ -1,4 +1,4 @@
-from mongoext.enums import Operator
+from mongoext.enums import Operator, PYTHON_BSON_MAPPING
 
 
 class Expression(dict):
@@ -21,7 +21,7 @@ class ComparisonExpression(Expression):
         if self.negate:
             rhs = {Operator.NOT: rhs}
         
-        super().__init__(self.field, rhs)
+        super().__init__(str(self.field), rhs)
 
     def __and__(self , other):
         if not isinstance(other, Expression):
@@ -122,13 +122,6 @@ def nin(field, value):
 def and_(*exprs):
     return LogicalExpression(Operator.AND, *exprs)
 
-# def not_(field, expr):
-#     # Maybe deprecate this or simply return the negation of an expression.
-#     return ComparisonExpression(field, Operator.NOT, expr)
-
-# def nor(*exprs):
-#     return LogicalExpression(Operator.NOR, *exprs)
-
 def or_(*exprs):
     return LogicalExpression(Operator.OR, *exprs)
 
@@ -138,5 +131,7 @@ def or_(*exprs):
 def exists(field, value):
     return ElementExpression(field, Operator.EXISTS, bool(value))
 
-def type(field, value):
+def type_(field, value):
+    if value is None or isinstance(value, type):
+        value = PYTHON_BSON_MAPPING.get(value, value)
     return ElementExpression(field, Operator.TYPE, value)
