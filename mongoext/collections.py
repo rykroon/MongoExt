@@ -14,9 +14,13 @@ id_field = Field('_id')
 
 class CollectionExt(Collection):
 
-    def get(self, id):
+    def get_by_id(self, id):
         query = id_field == ObjectId(id)
         return self.find_one(query)
+
+    def delete_by_id(self, id):
+        query = id_field == ObjectId(id)
+        return self.delete_one(filter=query)
 
     def insert_document(self, document):
         if '_id' in document and bool(document['_id']) == False:
@@ -33,64 +37,56 @@ class CollectionExt(Collection):
             update={'$set': document}
         )
 
-    def save_document(self, document):
-        """
-            If the document's '_id' field is set to a value that 
-                evaluates to True, then execute an UPDATE.
-            If the document's '_id' field is not set or if the UPDATE
-                didn’t update anything then execute an INSERT.
-        """
-        has_id = bool(document.get('_id'))
-        if has_id:
-            result = self.update_document(document)
-            if result.matched_count == 1:
-                return result
-        return self.insert_document(document)
-
     def delete_document(self, document):
         if '_id' not in document:
-            raise MissingIdException("Cannot delete a document that does not have an '_id' field.")        
+            raise MissingIdException("Cannot delete a document that does not have an '_id' field.")
         return self.delete_by_id(document['_id'])
 
-    def insert_dataclass(self, dc):
-        if not is_dataclass(dc):
+    def insert_dataclass(self, obj):
+        if not is_dataclass(obj):
             raise TypeError
 
-        if '_id' not in (f.name for f in fields(dc)):
+        if '_id' not in (f.name for f in fields(obj)):
             raise TypeError
         
-        return self.insert_document(asdict(dc))
+        result = self.insert_document(asdict(obj))
+        setattr(obj, '_id', result.inserted_id)
+        return result
 
-    def update_dataclass(self, dc):
-        if not is_dataclass(dc):
+    def update_dataclass(self, obj):
+        if not is_dataclass(obj):
             raise TypeError
 
-        if '_id' not in (f.name for f in fields(dc)):
+        if '_id' not in (f.name for f in fields(obj)):
             raise TypeError
 
-        return self.update_document(asdict(dc))
+        return self.update_document(asdict(obj))
 
-    def delete_dataclass(self, dc):
-        if not is_dataclass(dc):
+    def delete_dataclass(self, obj):
+        if not is_dataclass(obj):
             raise TypeError
         
-        if '_id' not in (f.name for f in fields(dc)):
+        if '_id' not in (f.name for f in fields(obj)):
             raise TypeError
         
-        return self.delete_document(asdict(dc))
+        return self.delete_by_id(obj._id)
 
     def insert_object(self, obj):
-        ...
+        document = {k: v for k, v in vars(obj).items() if not k.startswith('_') or k == '_id'}
+        result = self.insert_document(document)
+        setattr(obj, '_id', result.inserted_id)
+        return result
 
     def update_object(self, obj):
-        ...
+        document = {k: v for k, v in vars(obj).items() if not k.startswith('_') or k == '_id'}
+        if '_id' not in document:
+            raise TypeError
+        return self.update_document(document)
 
     def delete_object(self, obj):
-        ...
-
-    def delete_by_id(self, id):
-        query = id_field == ObjectId(id)
-        return self.delete_one(filter=query)
+        if not hasattr(obj, '_id'):
+            raise TypeError
+        return self.delete_by_id(obj._id)
 
 
 class AsyncCollectionExt(AsyncIOMotorCollection):
