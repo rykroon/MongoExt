@@ -1,4 +1,4 @@
-from dataclasses import asdict, is_dataclass
+from dataclasses import asdict, fields, is_dataclass
 from typing import Type
 
 from bson import ObjectId
@@ -19,6 +19,8 @@ class CollectionExt(Collection):
         return self.find_one(query)
 
     def insert_document(self, document):
+        if '_id' in document and bool(document['_id']) == False:
+            del document['_id']
         return self.insert_one(document)
 
     def update_document(self, document):
@@ -53,22 +55,38 @@ class CollectionExt(Collection):
     def insert_dataclass(self, dc):
         if not is_dataclass(dc):
             raise TypeError
+
+        if '_id' not in (f.name for f in fields(dc)):
+            raise TypeError
+        
         return self.insert_document(asdict(dc))
 
     def update_dataclass(self, dc):
         if not is_dataclass(dc):
             raise TypeError
-        return self.update_document(asdict(dc))
 
-    def save_dataclass(self, dc):
-        if not is_dataclass(dc):
+        if '_id' not in (f.name for f in fields(dc)):
             raise TypeError
-        return self.save_document(asdict(dc))
+
+        return self.update_document(asdict(dc))
 
     def delete_dataclass(self, dc):
         if not is_dataclass(dc):
             raise TypeError
+        
+        if '_id' not in (f.name for f in fields(dc)):
+            raise TypeError
+        
         return self.delete_document(asdict(dc))
+
+    def insert_object(self, obj):
+        ...
+
+    def update_object(self, obj):
+        ...
+
+    def delete_object(self, obj):
+        ...
 
     def delete_by_id(self, id):
         query = id_field == ObjectId(id)
