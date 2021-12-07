@@ -44,9 +44,11 @@ class CollectionExt(Collection):
 
     def delete(self, document):
         if '_id' not in document:
-            raise MissingIdException("Cannot delete a document that does not have an '_id' field.")
-        
-        query = id_field == document['_id']
+            raise MissingIdException("Cannot delete a document that does not have an '_id' field.")        
+        return self.delete_by_id(document['_id'])
+
+    def delete_by_id(self, id):
+        query = id_field == ObjectId(id)
         return self.delete_one(filter=query)
 
 
