@@ -1,3 +1,6 @@
+from dataclasses import asdict, is_dataclass
+from typing import Type
+
 from bson import ObjectId
 from pymongo.collection import Collection
 from motor.motor_asyncio import AsyncIOMotorCollection
@@ -15,10 +18,10 @@ class CollectionExt(Collection):
         query = id_field == ObjectId(id)
         return self.find_one(query)
 
-    def insert(self, document):
+    def insert_document(self, document):
         return self.insert_one(document)
 
-    def update(self, document):
+    def update_document(self, document):
         if '_id' not in document:
             raise MissingIdException("Cannot update a document that does not have an '_id' field.")
         
@@ -28,7 +31,7 @@ class CollectionExt(Collection):
             update={'$set': document}
         )
 
-    def save(self, document):
+    def save_document(self, document):
         """
             If the document's '_id' field is set to a value that 
                 evaluates to True, then execute an UPDATE.
@@ -37,15 +40,35 @@ class CollectionExt(Collection):
         """
         has_id = bool(document.get('_id'))
         if has_id:
-            result = self.update(document)
+            result = self.update_document(document)
             if result.matched_count == 1:
                 return result
-        return self.insert(document)
+        return self.insert_document(document)
 
-    def delete(self, document):
+    def delete_document(self, document):
         if '_id' not in document:
             raise MissingIdException("Cannot delete a document that does not have an '_id' field.")        
         return self.delete_by_id(document['_id'])
+
+    def insert_dataclass(self, dc):
+        if not is_dataclass(dc):
+            raise TypeError
+        return self.insert_document(asdict(dc))
+
+    def update_dataclass(self, dc):
+        if not is_dataclass(dc):
+            raise TypeError
+        return self.update_document(asdict(dc))
+
+    def save_dataclass(self, dc):
+        if not is_dataclass(dc):
+            raise TypeError
+        return self.save_document(asdict(dc))
+
+    def delete_dataclass(self, dc):
+        if not is_dataclass(dc):
+            raise TypeError
+        return self.delete_document(asdict(dc))
 
     def delete_by_id(self, id):
         query = id_field == ObjectId(id)
