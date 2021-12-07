@@ -1,4 +1,4 @@
-from mongoext import expressions
+from mongoext.query import expressions
         
 
 class Field:

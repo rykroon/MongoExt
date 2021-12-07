@@ -1,4 +1,4 @@
-from mongoext.enums import Operator, PYTHON_BSON_MAPPING
+from mongoext.query.enums import Operator, PYTHON_BSON_MAPPING
 
 
 class Expression(dict):
