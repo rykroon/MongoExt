@@ -48,6 +48,8 @@ class CollectionExt(Collection):
 
     def update_object(self, obj):
         check_object(obj)
+        if not hasattr(obj, '_id'):
+            raise MissingIdException("Cannot update an object that does not have an '_id' attribute.")
         document = object_to_dict(obj)
         return self.update_document(document)
 
