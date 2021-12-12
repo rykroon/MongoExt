@@ -6,10 +6,15 @@ class DocumentIterator:
         if not callable(document_hook):
             raise TypeError
         self.document_hook = document_hook
+        self.cache = []
 
     def __iter__(self):
+        if self.cache:
+            return self.cache
         return self
 
     def __next__(self):
         document = next(self.cursor)
-        return self.document_hook(document)
+        result = self.document_hook(document)
+        self.cache.append(result)
+        return result
