@@ -19,7 +19,7 @@ class AsyncCollectionExt(AsyncIOMotorCollection):
         query = id_field == ObjectId(id)
         return await self.delete_one(filter=query)
     
-   async def insert_document(self, document):
+    async def insert_document(self, document):
         if '_id' in document and bool(document['_id']) == False:
             del document['_id']
         return await self.insert_one(document)
