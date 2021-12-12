@@ -2,6 +2,11 @@ import unittest
 
 from mongoext.fields import Field
 
+"""
+    Run 'coverage run -m unittest discover'
+    Run 'coverage report -m'
+"""
+
 
 class TestOperators(unittest.TestCase):
 
@@ -119,8 +124,6 @@ class TestOperators(unittest.TestCase):
             'baz': {'$type': 1}
         }
 
-    
-
 
 class TestLogicalExpressions(unittest.TestCase):
 
@@ -200,6 +203,12 @@ class TestLogicalExpressions(unittest.TestCase):
                 ]}
             ]
         }
+
+
+class TestCollectionExt(unittest.TestCase):
+
+    def seUp(self):
+        ...
 
 
 if __name__ == '__main__':
