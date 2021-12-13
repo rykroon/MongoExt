@@ -265,6 +265,47 @@ class TestCollectionExt(unittest.TestCase):
 
         assert self.coll.get_by_id(self.doc['_id']) is None
 
+    def test_insert_object(self):
+        class Foo:
+            ...
+
+        f = Foo()
+        self.coll.insert_object(f)
+        assert hasattr(f, '_id') == True
+        assert f._id is not None
+
+        assert self.coll.get_by_id(f._id)['_id'] == f._id
+
+        with self.assertRaises(TypeError):
+            self.coll.insert_object(5)
+
+    def test_update_object(self):
+        class Foo:
+            ...
+
+        f = Foo()
+        f.name = 'Alice'
+        self.coll.insert_object(f)
+        f.name = 'Bob'
+        self.coll.update_object(f)
+        self.coll.get_by_id(f._id)['name'] == 'Bob'
+
+        with self.assertRaises(TypeError):
+            self.coll.update_object(5)
+
+        with self.assertRaises(MissingIdException):
+            self.coll.update_object(Foo())
+
+    def test_delete_object(self):
+        class Foo:
+            ...
+
+        f = Foo()
+        self.coll.insert_object(f)
+        result = self.coll.delete_object(f)
+        assert result.deleted_count == 1
+        assert self.coll.get_by_id(f._id) is None
+
 
 if __name__ == '__main__':
     unittest.main()
