@@ -132,6 +132,5 @@ def exists(field, value):
     return ElementExpression(field, Operator.EXISTS, bool(value))
 
 def type_(field, value):
-    if value is None or isinstance(value, type):
-        value = PYTHON_BSON_MAPPING.get(value, value)
+    value = PYTHON_BSON_MAPPING.get(value, value)
     return ElementExpression(field, Operator.TYPE, value)
