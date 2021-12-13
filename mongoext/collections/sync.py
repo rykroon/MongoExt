@@ -12,11 +12,11 @@ id_field = Field('_id')
 class CollectionExt(Collection):
 
     def get_by_id(self, id):
-        query = id_field == ObjectId(id)
+        query = id_field == id
         return self.find_one(query)
 
     def delete_by_id(self, id):
-        query = id_field == ObjectId(id)
+        query = id_field == id
         return self.delete_one(filter=query)
 
     def insert_document(self, document):

@@ -12,11 +12,11 @@ id_field = Field('_id')
 class AsyncCollectionExt(AsyncIOMotorCollection):
 
     async def get_by_id(self, id):
-        query = id_field == ObjectId(id)
+        query = id_field == id
         return await self.find_one(query)
 
     async def delete_by_id(self, id):
-        query = id_field == ObjectId(id)
+        query = id_field == id
         return await self.delete_one(filter=query)
     
     async def insert_document(self, document):
