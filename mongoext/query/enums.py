@@ -26,31 +26,44 @@ class Operator(str, Enum):
 
 # https://docs.mongodb.com/manual/reference/bson-types/
 
-class BSONType(int, Enum):
-    DOUBLE = 1
-    STRING = 2
-    OBJECT = 3
-    ARRAY = 4
-    BIN_DATA = 5
-    UNDEFINED = 6               # Deprecated
-    OBJECT_ID = 7
-    BOOL = 8
-    DATE = 9
-    NULL = 10
-    REGEX = 11
-    DB_POINTER = 12             # Deprecated
-    JAVASCRIPT = 13
-    SYMBOL = 14                 # Deprecated
-    JAVASCRIPT_WITH_SCOPE = 15  # Deprecated
-    INT = 16
-    TIMESTAMP = 17
-    LONG = 18
-    DECIMAL = 19
-    MIN_KEY = -1
-    MAX_KEY = 127
+class BSONType(Enum):
+    DOUBLE = 1, "double"
+    STRING = 2, "string"
+    OBJECT = 3, "object"
+    ARRAY = 4, "array"
+    BIN_DATA = 5, "binData"
+    # UNDEFINED = 6, "undefined"
+    OBJECT_ID = 7, "objectId"
+    BOOL = 8, "bool"
+    DATE = 9, "date"
+    NULL = 10, "null"
+    REGEX = 11, "regex"
+    # DB_POINTER = 12, "dbPointer"
+    JAVASCRIPT = 13, "javascript" 
+    # SYMBOL = 14, "pointer"
+    # JAVASCRIPT_WITH_SCOPE = 15, "javascriptWithScope"
+    INT = 16, "int" 
+    TIMESTAMP = 17, "timestamp" 
+    LONG = 18, "long" 
+    DECIMAL = 19, "decimal" 
+    MIN_KEY = -1, "minKey" 
+    MAX_KEY = 127, "maxKey" 
+
+    def __init__(self, number, alias):
+        self.number = number
+        self.alias = alias
+
+    def __eq__(self, other):
+        if isinstance(other, int):
+            return self.number == other
+
+        if isinstance(other, str):
+            return self.alias == other
+
+        return super().__eq__(other)
 
     def __str__(self):
-        return self.value
+        return self.alias
 
 
 # https://pymongo.readthedocs.io/en/stable/api/bson/
