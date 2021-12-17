@@ -1,8 +1,9 @@
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum
+from re import Pattern
 
-from bson import ObjectId, Decimal128, Int64, SON
+from bson import BSON, Binary, Decimal128, Int64, ObjectId, Regex, SON
 
 
 class Operator(str, Enum):
@@ -75,11 +76,14 @@ PYTHON_BSON_MAPPING = {
     SON: BSONType.OBJECT,
     list: BSONType.ARRAY, 
     bytes: BSONType.BIN_DATA,
+    Binary: BSONType.BIN_DATA,
     ObjectId: BSONType.OBJECT_ID,
     bool: BSONType.BOOL,
     datetime: BSONType.DATE,
     None: BSONType.NULL,
     type(None): BSONType.NULL,
+    Pattern: BSONType.REGEX,
+    Regex: BSONType.REGEX,
     int: BSONType.INT,
     Int64: BSONType.INT,
     Decimal: BSONType.DECIMAL,
