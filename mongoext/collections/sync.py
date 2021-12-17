@@ -1,8 +1,7 @@
-from bson import ObjectId
 from pymongo.collection import Collection
 
 from mongoext.exceptions import MissingIdException
-from mongoext.fields import Field
+from mongoext.query import Field
 from mongoext.collections.utils import check_dataclass, check_object, dataclass_to_dict, object_to_dict
 
 

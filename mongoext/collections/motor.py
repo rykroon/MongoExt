@@ -1,8 +1,7 @@
-from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorCollection
 
 from mongoext.exceptions import MissingIdException
-from mongoext.fields import Field
+from mongoext.query import Field
 from mongoext.collections.utils import check_object, check_dataclass, dataclass_to_dict, object_to_dict
 
 

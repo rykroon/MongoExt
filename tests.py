@@ -6,7 +6,7 @@ from pymongo.errors import DuplicateKeyError
 
 from mongoext.collections import CollectionExt
 from mongoext.exceptions import MissingIdException
-from mongoext.fields import Field
+from mongoext.query import Field
 
 """
     Run 'coverage run -m unittest discover'

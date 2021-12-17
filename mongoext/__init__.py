@@ -1,2 +1,2 @@
 from mongoext.collections import CollectionExt, AsyncCollectionExt
-from mongoext.query.enums import BSONType
+from mongoext.query import BSONType, Field
