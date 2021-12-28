@@ -1,4 +1,6 @@
-from mongoext.query.enums import Operator, PYTHON_BSON_MAPPING
+from typing import Any, Union
+from mongoext.query.enums import BSONType, Operator, PYTHON_BSON_MAPPING
+from mongoext.query.fields import Field
 
 
 class Expression(dict):
@@ -11,7 +13,12 @@ class Expression(dict):
 
 class ComparisonExpression(Expression):
 
-    def __init__(self, field, op, value, negate=False):
+    def __init__(
+            self, field: Union[str, Field],
+            op: Operator,
+            value: Any,
+            negate: bool = False
+    ):
         self.field = field
         self.op = op
         self.value = value
@@ -20,10 +27,10 @@ class ComparisonExpression(Expression):
         rhs = {self.op: self.value}
         if self.negate:
             rhs = {Operator.NOT: rhs}
-        
+
         super().__init__(str(self.field), rhs)
 
-    def __and__(self , other):
+    def __and__(self, other):
         if not isinstance(other, Expression):
             raise TypeError
 
@@ -32,7 +39,7 @@ class ComparisonExpression(Expression):
                 return and_(self, *other.exprs)
 
         return and_(self, other)
-        
+
     def __or__(self, other):
         if not isinstance(other, Expression):
             raise TypeError
@@ -49,7 +56,7 @@ class ComparisonExpression(Expression):
 
 class LogicalExpression(Expression):
 
-    def __init__(self, op, *exprs):
+    def __init__(self, op: Operator, *exprs):
         self.op = op
         self.exprs = list(exprs)
         super().__init__(self.op, self.exprs)
@@ -68,7 +75,7 @@ class LogicalExpression(Expression):
     def __or__(self, other):
         if not isinstance(other, Expression):
             raise TypeError
-        
+
         self_exprs = self.exprs if self.op == Operator.OR else [self]
 
         if isinstance(other, LogicalExpression) and other.op == Operator.OR:
@@ -92,45 +99,55 @@ class ElementExpression(ComparisonExpression):
 
 # Comparison operators
 
-def eq(field, value):
+def eq(field: Field, value: Any) -> ComparisonExpression:
     return ComparisonExpression(field, Operator.EQ, value)
 
-def ne(field, value):
+
+def ne(field: Field, value: Any) -> ComparisonExpression:
     return ComparisonExpression(field, Operator.NE, value)
 
-def lt(field, value):
+
+def lt(field: Field, value: Any) -> ComparisonExpression:
     return ComparisonExpression(field, Operator.LT, value)
 
-def lte(field, value):
+
+def lte(field: Field, value: Any) -> ComparisonExpression:
     return ComparisonExpression(field, Operator.LTE, value)
 
-def gt(field, value):
+
+def gt(field: Field, value: Any) -> ComparisonExpression:
     return ComparisonExpression(field, Operator.GT, value)
 
-def gte(field, value):
+
+def gte(field: Field, value: Any) -> ComparisonExpression:
     return ComparisonExpression(field, Operator.GTE, value)
 
-def in_(field, value):
+
+def in_(field: Field, value: list) -> ComparisonExpression:
     return ComparisonExpression(field, Operator.IN, value)
 
-def nin(field, value):
+
+def nin(field: Field, value: list) -> ComparisonExpression:
     return ComparisonExpression(field, Operator.NIN, value)
 
 
 # logical operators
 
-def and_(*exprs):
+def and_(*exprs) -> LogicalExpression:
     return LogicalExpression(Operator.AND, *exprs)
 
-def or_(*exprs):
+
+def or_(*exprs) -> LogicalExpression:
     return LogicalExpression(Operator.OR, *exprs)
 
 
 # element operators
 
-def exists(field, value):
+def exists(field: Field, value: bool) -> ElementExpression:
     return ElementExpression(field, Operator.EXISTS, bool(value))
 
-def type_(field, value):
-    value = PYTHON_BSON_MAPPING.get(value, value)
+
+def type_(field: Field, value: Union[BSONType, int, str, type]) -> ElementExpression:
+    if value in PYTHON_BSON_MAPPING:
+        value = PYTHON_BSON_MAPPING[value]
     return ElementExpression(field, Operator.TYPE, value)

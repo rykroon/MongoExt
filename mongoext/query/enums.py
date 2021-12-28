@@ -3,7 +3,7 @@ from decimal import Decimal
 from enum import Enum
 from re import Pattern
 
-from bson import BSON, Binary, Decimal128, Int64, ObjectId, Regex, SON
+from bson import Binary, Decimal128, Int64, ObjectId, Regex, SON
 
 
 class Operator(str, Enum):
@@ -40,17 +40,17 @@ class BSONType(Enum):
     NULL = 10, "null"
     REGEX = 11, "regex"
     # DB_POINTER = 12, "dbPointer"
-    JAVASCRIPT = 13, "javascript" 
+    JAVASCRIPT = 13, "javascript"
     # SYMBOL = 14, "pointer"
     # JAVASCRIPT_WITH_SCOPE = 15, "javascriptWithScope"
-    INT = 16, "int" 
-    TIMESTAMP = 17, "timestamp" 
-    LONG = 18, "long" 
-    DECIMAL = 19, "decimal" 
-    MIN_KEY = -1, "minKey" 
-    MAX_KEY = 127, "maxKey" 
+    INT = 16, "int"
+    TIMESTAMP = 17, "timestamp"
+    LONG = 18, "long"
+    DECIMAL = 19, "decimal"
+    MIN_KEY = -1, "minKey"
+    MAX_KEY = 127, "maxKey"
 
-    def __init__(self, number, alias):
+    def __init__(self, number: int, alias: str):
         self.number = number
         self.alias = alias
 
@@ -74,7 +74,7 @@ PYTHON_BSON_MAPPING = {
     str: BSONType.STRING,
     dict: BSONType.OBJECT,
     SON: BSONType.OBJECT,
-    list: BSONType.ARRAY, 
+    list: BSONType.ARRAY,
     bytes: BSONType.BIN_DATA,
     Binary: BSONType.BIN_DATA,
     ObjectId: BSONType.OBJECT_ID,

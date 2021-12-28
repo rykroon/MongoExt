@@ -1,5 +1,5 @@
 from mongoext.query import expressions
-        
+
 
 class Field:
     def __init__(self, name=None):
@@ -60,7 +60,7 @@ class Field:
 
     def nin(self, value, /):
         return expressions.nin(self, value)
-    
+
     def exists(self, value=True, /):
         return expressions.exists(self, value)
 
