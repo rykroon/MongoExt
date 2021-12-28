@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 import unittest
 
 from bson import ObjectId
@@ -43,8 +44,9 @@ class TestCollectionExt(unittest.TestCase):
         assert doc['_id'] is not None
 
         doc = {'_id': 123456}
-        self.coll.insert_document(doc)
+        result = self.coll.insert_document(doc)
         assert doc['_id'] == 123456
+        assert result.inserted_id == doc['_id']
 
     def test_update_document(self):
         self.doc['d'] = 4
@@ -100,6 +102,59 @@ class TestCollectionExt(unittest.TestCase):
         f = Foo()
         self.coll.insert_object(f)
         result = self.coll.delete_object(f)
+        assert result.deleted_count == 1
+        assert self.coll.get_by_id(f._id) is None
+
+    def test_insert_dataclass(self):
+        class BadFoo:
+            ...
+
+        @dataclass
+        class GoodFoo:
+            _id: ObjectId = None
+
+        bf = BadFoo()
+        gf = GoodFoo()
+
+        self.coll.insert_dataclass(gf)
+        assert hasattr(gf, '_id') == True
+        assert gf._id is not None
+
+        assert self.coll.get_by_id(gf._id)['_id'] == gf._id
+
+        with self.assertRaises(TypeError):
+            self.coll.insert_dataclass(5)
+
+        with self.assertRaises(TypeError):
+            self.coll.insert_dataclass(bf)
+
+    def test_update_dataclass(self):
+        @dataclass
+        class Foo:
+            _id: ObjectId = None
+            name: str = None
+
+        f = Foo()
+        f.name = 'Alice'
+        self.coll.insert_dataclass(f)
+        f.name = 'Bob'
+        self.coll.update_dataclass(f)
+        self.coll.get_by_id(f._id)['name'] == 'Bob'
+
+        with self.assertRaises(TypeError):
+            self.coll.update_dataclass(5)
+
+        # with self.assertRaises(MissingIdException):
+        #     self.coll.update_dataclass(Foo())
+
+    def test_delete_dataclass(self):
+        @dataclass
+        class Foo:
+            _id: ObjectId = None
+
+        f = Foo()
+        self.coll.insert_dataclass(f)
+        result = self.coll.delete_dataclass(f)
         assert result.deleted_count == 1
         assert self.coll.get_by_id(f._id) is None
 
