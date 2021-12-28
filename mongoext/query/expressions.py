@@ -1,6 +1,6 @@
 from typing import Any, Union
 from mongoext.query.enums import BSONType, Operator, PYTHON_BSON_MAPPING
-from mongoext.query.fields import Field
+#from mongoext.query.fields import Field
 
 
 class Expression(dict):
@@ -14,7 +14,7 @@ class Expression(dict):
 class ComparisonExpression(Expression):
 
     def __init__(
-            self, field: Union[str, Field],
+            self, field: str,
             op: Operator,
             value: Any,
             negate: bool = False
@@ -99,35 +99,35 @@ class ElementExpression(ComparisonExpression):
 
 # Comparison operators
 
-def eq(field: Field, value: Any) -> ComparisonExpression:
+def eq(field: str, value: Any) -> ComparisonExpression:
     return ComparisonExpression(field, Operator.EQ, value)
 
 
-def ne(field: Field, value: Any) -> ComparisonExpression:
+def ne(field: str, value: Any) -> ComparisonExpression:
     return ComparisonExpression(field, Operator.NE, value)
 
 
-def lt(field: Field, value: Any) -> ComparisonExpression:
+def lt(field: str, value: Any) -> ComparisonExpression:
     return ComparisonExpression(field, Operator.LT, value)
 
 
-def lte(field: Field, value: Any) -> ComparisonExpression:
+def lte(field: str, value: Any) -> ComparisonExpression:
     return ComparisonExpression(field, Operator.LTE, value)
 
 
-def gt(field: Field, value: Any) -> ComparisonExpression:
+def gt(field: str, value: Any) -> ComparisonExpression:
     return ComparisonExpression(field, Operator.GT, value)
 
 
-def gte(field: Field, value: Any) -> ComparisonExpression:
+def gte(field: str, value: Any) -> ComparisonExpression:
     return ComparisonExpression(field, Operator.GTE, value)
 
 
-def in_(field: Field, value: list) -> ComparisonExpression:
+def in_(field: str, value: list) -> ComparisonExpression:
     return ComparisonExpression(field, Operator.IN, value)
 
 
-def nin(field: Field, value: list) -> ComparisonExpression:
+def nin(field: str, value: list) -> ComparisonExpression:
     return ComparisonExpression(field, Operator.NIN, value)
 
 
@@ -143,11 +143,11 @@ def or_(*exprs) -> LogicalExpression:
 
 # element operators
 
-def exists(field: Field, value: bool) -> ElementExpression:
+def exists(field: str, value: bool) -> ElementExpression:
     return ElementExpression(field, Operator.EXISTS, bool(value))
 
 
-def type_(field: Field, value: Union[BSONType, int, str, type]) -> ElementExpression:
+def type_(field: str, value: Union[BSONType, int, str, type]) -> ElementExpression:
     if value in PYTHON_BSON_MAPPING:
         value = PYTHON_BSON_MAPPING[value]
     return ElementExpression(field, Operator.TYPE, value)
