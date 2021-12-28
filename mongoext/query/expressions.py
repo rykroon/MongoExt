@@ -14,7 +14,8 @@ class Expression(dict):
 class ComparisonExpression(Expression):
 
     def __init__(
-            self, field: str,
+            self, 
+            field: str,
             op: Operator,
             value: Any,
             negate: bool = False
@@ -32,7 +33,7 @@ class ComparisonExpression(Expression):
 
     def __and__(self, other):
         if not isinstance(other, Expression):
-            raise TypeError
+            return NotImplemented
 
         if isinstance(other, LogicalExpression):
             if other.op == Operator.AND:
@@ -42,7 +43,7 @@ class ComparisonExpression(Expression):
 
     def __or__(self, other):
         if not isinstance(other, Expression):
-            raise TypeError
+            return NotImplemented
 
         if isinstance(other, LogicalExpression):
             if other.op == Operator.OR:
@@ -63,7 +64,7 @@ class LogicalExpression(Expression):
 
     def __and__(self, other):
         if not isinstance(other, Expression):
-            raise TypeError
+            return NotImplemented
 
         self_exprs = self.exprs if self.op == Operator.AND else [self]
 
@@ -74,7 +75,7 @@ class LogicalExpression(Expression):
 
     def __or__(self, other):
         if not isinstance(other, Expression):
-            raise TypeError
+            return NotImplemented
 
         self_exprs = self.exprs if self.op == Operator.OR else [self]
 
