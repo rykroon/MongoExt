@@ -7,7 +7,8 @@ def check_object(obj):
 
 
 def object_to_dict(obj):
-    return {k: v for k, v in obj.__dict__.items() if not k.startswith('_') or k == '_id'}
+    return {k: v for k, v in obj.__dict__.items() 
+            if not k.startswith('_') or k == '_id'}
 
 
 def check_dataclass(obj):
@@ -20,4 +21,3 @@ def check_dataclass(obj):
 
 def dataclass_to_dict(obj):
     return asdict(obj)
-

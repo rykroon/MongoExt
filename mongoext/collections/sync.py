@@ -25,7 +25,9 @@ class CollectionExt(Collection):
 
     def update_document(self, document):
         if '_id' not in document:
-            raise MissingIdException("Cannot update a document that does not have an '_id' field.")
+            raise MissingIdException(
+                "Cannot update a document that does not have an '_id' field."
+            )
         
         query = id_field == document['_id']
         return self.update_one(
@@ -35,7 +37,9 @@ class CollectionExt(Collection):
 
     def delete_document(self, document):
         if '_id' not in document:
-            raise MissingIdException("Cannot delete a document that does not have an '_id' field.")
+            raise MissingIdException(
+                "Cannot delete a document that does not have an '_id' field."
+            )
         return self.delete_by_id(document['_id'])
 
     def insert_object(self, obj):
@@ -48,14 +52,18 @@ class CollectionExt(Collection):
     def update_object(self, obj):
         check_object(obj)
         if not hasattr(obj, '_id'):
-            raise MissingIdException("Cannot update an object that does not have an '_id' attribute.")
+            raise MissingIdException(
+                "Cannot update an object that does not have an '_id' attribute."
+            )
         document = object_to_dict(obj)
         return self.update_document(document)
 
     def delete_object(self, obj):
         check_object(obj)
         if not hasattr(obj, '_id'):
-            raise MissingIdException("Cannot delete an object that does not have an '_id' attribute.")
+            raise MissingIdException(
+                "Cannot delete an object that does not have an '_id' attribute."
+            )
         return self.delete_by_id(obj._id)
 
     def insert_dataclass(self, obj):
